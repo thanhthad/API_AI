@@ -1,14 +1,21 @@
-package com.example.restfulapi01.controller;
+package com.example.restfulapi01.controller; // Đảm bảo package này khớp với dự án của bạn
 
 import com.example.restfulapi01.payload.EmailAnalyzeRequest;
 import com.example.restfulapi01.payload.EmailAnalyzeResponse;
+import com.example.restfulapi01.dto.HistoryEmailDTO; // Import HistoryEmailDTO
+import com.example.restfulapi01.service.HistoryEmailService; // Import HistoryEmailService
+import com.example.restfulapi01.service.UserService; // Import UserService
+import com.example.restfulapi01.model.User; // Import User model
+import com.fasterxml.jackson.databind.ObjectMapper; // Import ObjectMapper
+
+import org.springframework.beans.factory.annotation.Autowired; // Import Autowired
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus; // Import HttpStatus
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,7 +27,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/analyze")
-@CrossOrigin(origins = "http://localhost:5173/") // Cho phép tất cả các nguồn gốc
+@CrossOrigin(origins = "*") // Bỏ dấu '/' cuối cùng để khớp tốt hơn
 public class EmailAnalyzerController {
 
     @Value("${huggingface.api.url}")
@@ -34,28 +41,51 @@ public class EmailAnalyzerController {
 
     private final WebClient webClient;
 
-    // Constructor để inject WebClient
+    @Autowired // Inject UserService để tìm người dùng
+    private UserService userService;
+
+    @Autowired // Inject HistoryEmailService để lưu lịch sử
+    private HistoryEmailService historyEmailService;
+
+    @Autowired // Inject ObjectMapper để xử lý JSON (cho detailedPredictions)
+    private ObjectMapper objectMapper;
+
+
+    // Constructor để inject WebClient.
+    // Các @Value và @Autowired sẽ được Spring tự động inject sau khi constructor chạy.
     public EmailAnalyzerController(WebClient.Builder webClientBuilder) {
         this.webClient = webClientBuilder.build();
     }
 
-    @PostMapping
-    public ResponseEntity<EmailAnalyzeResponse> analyzeEmail(@RequestBody EmailAnalyzeRequest request) {
+    @PostMapping("/{userId}") // Endpoint POST mới: bao gồm userId trong URL
+    public ResponseEntity<EmailAnalyzeResponse> analyzeEmail(
+            @PathVariable Long userId, // Lấy userId từ URL path
+            @RequestBody EmailAnalyzeRequest request) {
+
+        // 1. Tìm người dùng theo userId
+        Optional<User> userOptional = userService.findById(userId);
+        if (userOptional.isEmpty()) {
+            // Trả về lỗi nếu không tìm thấy người dùng
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new EmailAnalyzeResponse(
+                    request.getSender(), request.getSubject(), request.getBody(),
+                    "USER_NOT_FOUND", 0.0, null, "User with ID " + userId + " not found."
+            ));
+        }
+        User user = userOptional.get(); // Lấy đối tượng User
+
         String textToAnalyze = request.getSubject() + " " + request.getBody();
 
-        // Định nghĩa các nhãn bạn muốn phân loại
         List<String> candidateLabels = Arrays.asList(
-                "spam email",               // Email rác
-                "phishing attempt",         // Email lừa đảo
-                "promotional offer",        // Email quảng cáo/tiếp thị
-                "newsletter",               // Bản tin
-                "transactional message",    // Thông báo giao dịch (đơn hàng, hóa đơn)
-                "legitimate communication", // Giao tiếp hợp lệ, không phải spam/phishing
-                "suspicious email",         // Email đáng ngờ (không rõ loại, cần xem xét thêm)
-                "social media notification" // Thông báo mạng xã hội
+                "spam email",
+                "phishing attempt",
+                "promotional offer",
+                "newsletter",
+                "transactional message",
+                "legitimate communication",
+                "suspicious email",
+                "social media notification"
         );
 
-        // Chuẩn bị body request cho Zero-shot Classification của BART
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("inputs", textToAnalyze);
         requestBody.put("parameters", Map.of("candidate_labels", candidateLabels, "multi_label", true));
@@ -72,7 +102,7 @@ public class EmailAnalyzerController {
                     .block();
         } catch (Exception e) {
             System.err.println("Error calling multi-label AI API: " + e.getMessage());
-            return ResponseEntity.status(500).body(new EmailAnalyzeResponse(
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new EmailAnalyzeResponse( // Dùng HttpStatus.INTERNAL_SERVER_ERROR
                     request.getSender(), request.getSubject(), request.getBody(),
                     "API_ERROR", 0.0, null, "Failed to analyze email with AI: " + e.getMessage()
             ));
@@ -86,7 +116,6 @@ public class EmailAnalyzerController {
             List<String> labels = (List<String>) aiResponseRaw.get("labels");
             List<Double> scores = (List<Double>) aiResponseRaw.get("scores");
 
-            // Tạo danh sách các Map { "label": "...", "score": ... }
             List<Map<String, Object>> rawPredictions = new ArrayList<>();
             for (int i = 0; i < labels.size(); i++) {
                 Map<String, Object> predictionMap = new HashMap<>();
@@ -95,22 +124,17 @@ public class EmailAnalyzerController {
                 rawPredictions.add(predictionMap);
             }
 
-            // Sắp xếp các dự đoán theo điểm số giảm dần
-            // Sắp xếp các dự đoán theo điểm số giảm dần
             rawPredictions.sort(Comparator.comparingDouble(map -> (Double) ((Map<String, Object>) map).get("score")).reversed());
 
-            // Lấy nhãn chính và các nhãn chi tiết trên ngưỡng
             if (!rawPredictions.isEmpty()) {
-                // Nhãn chính là nhãn có điểm số cao nhất
                 primaryPredictionLabel = mapZeroShotLabelToCustomLabel((String) rawPredictions.get(0).get("label"));
                 primaryPredictionScore = (Double) rawPredictions.get(0).get("score");
 
-                // Lọc các nhãn chi tiết trên ngưỡng và ánh xạ
                 for (Map<String, Object> prediction : rawPredictions) {
                     String currentLabel = (String) prediction.get("label");
                     Double currentScore = (Double) prediction.get("score");
 
-                    if (currentScore > 0.4) { // Ngưỡng có thể điều chỉnh để lọc bớt nhãn ít liên quan
+                    if (currentScore > 0.4) {
                         Map<String, Object> mappedPrediction = new HashMap<>();
                         mappedPrediction.put("label", mapZeroShotLabelToCustomLabel(currentLabel));
                         mappedPrediction.put("score", currentScore);
@@ -119,11 +143,9 @@ public class EmailAnalyzerController {
                 }
             }
 
-            // Nếu không có nhãn nào đạt ngưỡng, hoặc không có dự đoán nào
             if (detailedPredictions.isEmpty()) {
                 primaryPredictionLabel = "UNCLEAR";
                 primaryPredictionScore = 0.0;
-                // Thêm một thông báo vào detailedPredictions nếu muốn
                 Map<String, Object> noPredictionMap = new HashMap<>();
                 noPredictionMap.put("label", "No clear prediction above threshold");
                 noPredictionMap.put("score", 0.0);
@@ -138,7 +160,7 @@ public class EmailAnalyzerController {
             detailedPredictions.add(errorMap);
         }
 
-        return ResponseEntity.ok(new EmailAnalyzeResponse(
+        EmailAnalyzeResponse response = new EmailAnalyzeResponse(
                 request.getSender(),
                 request.getSubject(),
                 request.getBody(),
@@ -146,7 +168,22 @@ public class EmailAnalyzerController {
                 primaryPredictionScore,
                 detailedPredictions,
                 "Email analysis complete."
-        ));
+        );
+
+        // 2. LƯU LỊCH SỬ VÀO DATABASE
+        historyEmailService.saveHistory(user, response); // Lưu ý: response ở đây là EmailAnalyzeResponse, không phải HistoryEmailDTO
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/history/{userId}") // Endpoint GET để lấy lịch sử của người dùng
+    public ResponseEntity<List<HistoryEmailDTO>> getUserHistory(@PathVariable Long userId) {
+        Optional<User> userOptional = userService.findById(userId);
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        List<HistoryEmailDTO> history = historyEmailService.getHistoryForUser(userId);
+        return ResponseEntity.ok(history);
     }
 
     // Helper để ánh xạ nhãn từ Zero-shot sang nhãn tùy chỉnh của bạn
@@ -158,7 +195,7 @@ public class EmailAnalyzerController {
         } else if ("promotional offer".equalsIgnoreCase(zeroShotLabel)) {
             return "PROMOTIONAL";
         } else if ("legitimate communication".equalsIgnoreCase(zeroShotLabel)) {
-            return "HAM"; // hoặc "LEGITIMATE"
+            return "HAM";
         } else if ("suspicious email".equalsIgnoreCase(zeroShotLabel)) {
             return "SUSPICIOUS";
         } else if ("newsletter".equalsIgnoreCase(zeroShotLabel)) {

@@ -1,25 +1,65 @@
-import React, { useState } from 'react';
-import EmailForm from './components/EmailForm';
-import ResultDisplay from './components/ResultDisplay';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import AuthForm from './components/AuthForm';
+import EmailAnalysis from './components/EmailAnalysis';
+import HistoryDisplay from './components/HistoryDisplay';
+import ProtectedRoute from './components/ProtectedRoute';
+
+// Import các trang tĩnh
+import HomePage from './pages/HomePage';
+import AboutScamsPage from './pages/AboutScamsPage';
+import HowToIdentifyPage from './pages/HowToIdentifyPage';
+import ProtectYourselfPage from './pages/ProtectYourselfPage';
+import ReportScamPage from './pages/ReportScamPage';
+import ContactPage from './pages/ContactPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage'; // <-- IMPORT TRANG QUÊN MẬT KHẨU
 
 function App() {
-  const [result, setResult] = useState<any | null>(null); // Lưu trữ kết quả phân tích
-  const [error, setError] = useState<string | null>(null); // Lưu trữ thông báo lỗi
-  const [loading, setLoading] = useState<boolean>(false); // Lưu trữ trạng thái loading
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center py-10 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-xl w-full space-y-8 bg-white p-10 rounded-xl shadow-2xl">
-        <h1 className="text-4xl font-extrabold text-center text-gray-900 mb-8">
-          Email AI Analyzer
-        </h1>
-        {/* Component Form gửi email */}
-        <EmailForm onResult={setResult} onError={setError} setLoading={setLoading} />
+    <Router>
+      <AuthProvider>
+        <div className="flex flex-col min-h-screen">
+          <Header />
+          <main className="flex-grow">
+            <Routes>
+              {/* Trang chủ (Public) */}
+              <Route path="/" element={<HomePage />} />
 
-        {/* Component hiển thị kết quả */}
-        <ResultDisplay result={result} error={error} loading={loading} />
-      </div>
-    </div>
+              {/* Trang đăng ký / đăng nhập (Public) */}
+              <Route path="/auth" element={<AuthForm onSuccess={() => window.location.href = '/analyze'} />} />
+
+              {/* TRANG QUÊN MẬT KHẨU (Public) */}
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} /> {/* <-- THÊM ROUTE NÀY */}
+
+              {/* Nhóm các Protected Routes (yêu cầu đăng nhập để truy cập) */}
+              <Route element={<ProtectedRoute />}>
+                {/* Các trang tĩnh bây giờ đã được bảo vệ */}
+                <Route path="/about-scams" element={<AboutScamsPage />} />
+                <Route path="/how-to-identify" element={<HowToIdentifyPage />} />
+                <Route path="/protect-yourself" element={<ProtectYourselfPage />} />
+                <Route path="/report-scam" element={<ReportScamPage />} />
+                <Route path="/contact" element={<ContactPage />} />
+
+                {/* Các trang tính năng đã có từ trước cũng nằm trong đây */}
+                <Route path="/analyze" element={<EmailAnalysis />} />
+                <Route path="/history" element={<HistoryDisplay />} />
+              </Route>
+
+              {/* Catch-all route for 404 Not Found */}
+              <Route path="*" element={
+                <div className="flex justify-center items-center h-full">
+                  <h2 className="text-center text-3xl font-bold mt-20">404 - Page Not Found</h2>
+                </div>
+              } />
+            </Routes>
+          </main>
+          <Footer />
+        </div>
+      </AuthProvider>
+    </Router>
   );
 }
 

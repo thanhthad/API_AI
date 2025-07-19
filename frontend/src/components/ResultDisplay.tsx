@@ -1,21 +1,21 @@
 import React from 'react';
 
-// Định nghĩa kiểu dữ liệu cho một dự đoán chi tiết
 interface Prediction {
   label: string;
   score: number;
 }
 
-// Định nghĩa props cho component ResultDisplay
+interface AnalyzeResponse { // Cần định nghĩa lại interface này cho chính xác
+  primaryPredictionLabel: string;
+  primaryPredictionScore: number;
+  detailedPredictions: Prediction[];
+  message: string;
+}
+
 interface ResultDisplayProps {
-  result: {
-    primaryPredictionLabel: string;
-    primaryPredictionScore: number;
-    detailedPredictions: Prediction[];
-    message: string;
-  } | null; // Có thể có hoặc không có kết quả
-  error: string | null; // Có thể có hoặc không có lỗi
-  loading: boolean; // Trạng thái loading
+  result: AnalyzeResponse | null;
+  error: string | null;
+  loading: boolean;
 }
 
 const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, error, loading }) => {
@@ -54,7 +54,7 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, error, loading })
     );
   }
 
-  return null; // Không hiển thị gì nếu chưa có kết quả, lỗi hoặc đang loading
+  return null;
 };
 
 export default ResultDisplay;
