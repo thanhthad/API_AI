@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "users") // Đổi tên bảng thành "users" để tránh xung đột với từ khóa 'user' trong một số DB
+@Table(name = "users")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,8 +27,13 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
 
+//    // Liên kết với DomainAnalysisResult
+//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+//    private List<DomainAnalysisResult> domainAnalysisResults = new ArrayList<>();
+
+    // Giữ lại nếu bạn thực sự cần
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<HistoryEmailCreated> historyEmails = new ArrayList<>();
+    private List<HistoryEmailCreated> historyEmails = new ArrayList<>(); // <-- Đảm bảo bạn có entity HistoryEmailCreated
 
     // Constructor bỏ qua id và historyEmails cho việc tạo mới
     public User(String username, String password, String email) {

@@ -52,6 +52,10 @@ const Header: React.FC = () => {
   const loggedInNavItems = [
     { name: 'Analyze Email', path: '/analyze' },
     { name: 'History', path: '/history' },
+    // --- START: Domain Links Added ---
+    { name: 'Analyze Domain', path: '/analyze-domain' },
+    { name: 'Domain History', path: '/domain-history' },
+    // --- END: Domain Links Added ---
   ];
 
   return (
