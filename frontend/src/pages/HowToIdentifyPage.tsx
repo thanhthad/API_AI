@@ -1,7 +1,7 @@
 import React from 'react';
 import AnimateOnScroll from '../components/AnimateOnScroll';
-import username from '../../public/username.jpg'
-import hoverlink from '../../public/hoverlink.webp'
+import username from '../assets/username.jpg'
+import hoverlink from '../assets/hoverlink.webp'
 const HowToIdentifyPage: React.FC = () => {
   return (
     <div className="container mx-auto p-8 text-gray-800">

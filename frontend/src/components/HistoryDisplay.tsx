@@ -52,7 +52,7 @@ const HistoryDisplay: React.FC = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(`http://62.146.236.71:8080/api/analyze/history/${user.userId}`);
+        const response = await fetch(`${import.meta.env.VITE_REACT_APP_API_URL}/api/analyze/history/${user.userId}`);
         if (!response.ok) {
           const errorText = await response.text();
           throw new Error(`Failed to fetch history: ${response.status} ${errorText}`);

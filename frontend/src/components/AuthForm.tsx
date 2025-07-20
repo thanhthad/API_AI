@@ -28,6 +28,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const baseUrl = import.meta.env.VITE_REACT_APP_API_URL;
 
   const { login } = useAuth();
 
@@ -70,8 +71,8 @@ const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
     setLoading(true);
 
     const url = isRegister
-      ? 'http://62.146.236.71:8080/api/auth/register'
-      : 'http://62.146.236.71:8080/api/auth/login';
+      ? `${baseUrl}/api/auth/register`
+      : `${baseUrl}/api/auth/login`;
 
     const body = isRegister
       ? JSON.stringify({ username, password, email })

@@ -43,13 +43,14 @@ const EmailForm: React.FC<EmailFormProps> = ({ onResult, onError, setLoading }) 
     onError(null); // Xóa lỗi cũ
 
     try {
-      const response = await fetch('http://62.146.236.71:8080/api/analyze', {
+      const response = await fetch(`${import.meta.env.VITE_REACT_APP_API_URL}/api/analyze`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData), // Chuyển đổi dữ liệu form sang JSON
+        body: JSON.stringify(formData),
       });
+
 
       if (!response.ok) {
         // Nếu response không OK (ví dụ: 4xx, 5xx)

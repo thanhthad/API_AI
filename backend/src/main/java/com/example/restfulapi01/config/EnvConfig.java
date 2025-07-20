@@ -1,22 +1,30 @@
-package com.example.restfulapi01.config;
+package com.example.restfulapi01.config; // Đảm bảo đúng package của bạn
 
-import io.github.cdimascio.dotenv.Dotenv;
-import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class EnvConfig {
 
-    @PostConstruct
-    public void loadEnv() {
-        Dotenv dotenv = Dotenv.configure()
-                .filename(".env")
-                .load();
+    @Value("${HUGGINGFACE_API_TOKEN}")
+    private String huggingfaceApiToken;
 
-        System.setProperty("huggingface.api.token", dotenv.get("HUGGINGFACE_API_TOKEN"));
-        // Đặt tên property rõ ràng cho model kiểm tra domain
-        System.setProperty("huggingface.model.id.domain-check", dotenv.get("HUGGINGFACE_MODEL_ID_DOMAIN_CHECK"));
-        // Đặt tên property rõ ràng cho model đa nhãn
-        System.setProperty("huggingface.model.id.multilabel", dotenv.get("HUGGINGFACE_MODEL_ID_MULTILABEL"));
+    @Value("${HUGGINGFACE_MODEL_ID_DOMAIN_CHECK}")
+    private String huggingfaceModelIdDomainCheck;
+
+    @Value("${HUGGINGFACE_MODEL_ID_MULTILABEL}")
+    private String huggingfaceModelIdMultilabel;
+
+    // Các getter để truy cập các giá trị này từ các class khác (nếu cần)
+    public String getHuggingfaceApiToken() {
+        return huggingfaceApiToken;
+    }
+
+    public String getHuggingfaceModelIdDomainCheck() {
+        return huggingfaceModelIdDomainCheck;
+    }
+
+    public String getHuggingfaceModelIdMultilabel() {
+        return huggingfaceModelIdMultilabel;
     }
 }

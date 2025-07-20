@@ -28,19 +28,18 @@ const AnalysisHistory: React.FC = () => {
 
       try {
         // SỬA ĐỔI QUAN TRỌNG: Cập nhật URL để userId là path variable
-        const response = await fetch(`http://62.146.236.71:8080/api/domain/history/${user.userId}`, {
+        const response = await fetch(`${import.meta.env.VITE_REACT_APP_API_URL}/api/domain/history/${user.userId}`, {
           headers: {
-            // 'X-User-Id': user.userId.toString(), // <-- XÓA DÒNG NÀY
-            // Nếu có JWT, bạn sẽ thêm Authorization header ở đây:
-            // 'Authorization': `Bearer ${user.token}`
+            // 'Authorization': `Bearer ${user.token}` nếu dùng JWT
           },
         });
+
 
         if (response.ok) {
           const data: HistoryItem[] = await response.json();
           setHistory(data);
         } else if (response.status === 401) {
-            setErrorMessage('Phiên đăng nhập đã hết hạn hoặc không hợp lệ. Vui lòng đăng nhập lại.');
+          setErrorMessage('Phiên đăng nhập đã hết hạn hoặc không hợp lệ. Vui lòng đăng nhập lại.');
         }
         else {
           setErrorMessage('Không thể tải lịch sử phân tích. Vui lòng thử lại.');
@@ -113,7 +112,7 @@ const AnalysisHistory: React.FC = () => {
         )}
         {/* Cập nhật điều kiện hiển thị thông báo "Vui lòng đăng nhập" */}
         {!isLoading && (!user || user.userId === null || user.userId === undefined) && !errorMessage && (
-            <p className="text-center text-gray-600">Vui lòng đăng nhập để xem lịch sử phân tích.</p>
+          <p className="text-center text-gray-600">Vui lòng đăng nhập để xem lịch sử phân tích.</p>
         )}
 
         {!isLoading && history.length > 0 && (

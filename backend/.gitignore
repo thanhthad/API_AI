@@ -36,5 +36,3 @@ build/
 # Secrets
 .env
 
-# Ignore application.properties (chứa thông tin nhạy cảm)
-src/main/resources/application.properties

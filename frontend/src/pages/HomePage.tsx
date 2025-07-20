@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import AnimateOnScroll from '../components/AnimateOnScroll';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import phishingConcept from '../../public/phishing.webp'; // Assuming you have an image for phishing concept
+import phishingConcept from '../assets/phishing.webp'; // Assuming you have an image for phishing concept
 
 import {
   FaShieldAlt,

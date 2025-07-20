@@ -46,11 +46,7 @@ function App() {
 
               {/* Nhóm các Protected Routes (yêu cầu đăng nhập để truy cập) */}
               <Route element={<ProtectedRoute />}>
-                
-              </Route>
-
-
-              {/* Các trang tĩnh đã được bảo vệ */}
+                   {/* Các trang tĩnh đã được bảo vệ */}
                 <Route path="/about-scams" element={<AboutScamsPage />} />
                 <Route path="/how-to-identify" element={<HowToIdentifyPage />} />
                 <Route path="/protect-yourself" element={<ProtectYourselfPage />} />
@@ -64,9 +60,7 @@ function App() {
                 {/* CÁC ROUTE MỚI CHO PHÂN TÍCH DOMAIN */}
                 <Route path="/analyze-domain" element={<DomainAnalysis />} />
                 <Route path="/domain-history" element={<AnalysisHistory />} />
-
-
-
+              </Route>
               {/* Catch-all route for 404 Not Found */}
               <Route path="*" element={
                 <div className="flex justify-center items-center h-full">

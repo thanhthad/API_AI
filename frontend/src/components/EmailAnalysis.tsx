@@ -75,7 +75,7 @@ const EmailAnalysis: React.FC = () => {
     }
 
     try {
-      const response = await fetch(`http://62.146.236.71:8080/api/analyze/${user.userId}`, {
+      const response = await fetch(`${import.meta.env.VITE_REACT_APP_API_URL}/api/analyze/${user.userId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
