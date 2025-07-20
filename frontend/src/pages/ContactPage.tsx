@@ -21,7 +21,7 @@ const ContactPage: React.FC = () => {
     setIsSuccess(false);
 
     try {
-      const response = await fetch('http://localhost:8080/api/contact/send', { // URL của API Spring Boot
+      const response = await fetch('http://62.146.236.71:8080/api/contact/send', { // URL của API Spring Boot
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

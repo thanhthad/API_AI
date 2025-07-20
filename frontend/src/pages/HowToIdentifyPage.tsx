@@ -1,6 +1,7 @@
 import React from 'react';
 import AnimateOnScroll from '../components/AnimateOnScroll';
-
+import username from '../../public/username.jpg'
+import hoverlink from '../../public/hoverlink.webp'
 const HowToIdentifyPage: React.FC = () => {
   return (
     <div className="container mx-auto p-8 text-gray-800">
@@ -14,7 +15,7 @@ const HowToIdentifyPage: React.FC = () => {
           <p className="text-lg leading-relaxed mb-4">
             This is often the easiest way to spot a fake. Scammers frequently use email addresses that are similar to legitimate ones but have subtle differences (e.g., `support@paypa1.com` instead of `support@paypal.com`). Always hover over the sender's name to reveal the actual email address, or inspect the full email headers.
           </p>
-          <img src="/src/assets/sender-check.png" alt="Check Sender Email" className="my-4 rounded-lg shadow-md max-w-full h-auto" />
+          <img src={username} alt="Check Sender Email" className="my-4 rounded-lg shadow-md max-w-full h-auto" />
         </section>
       </AnimateOnScroll>
 
@@ -42,7 +43,7 @@ const HowToIdentifyPage: React.FC = () => {
           <p className="text-lg leading-relaxed mb-4">
             Before clicking any link, hover your mouse over it (on desktop) or long-press it (on mobile) to see the actual URL. If the URL doesn't match the sender's legitimate website, it's likely a scam.
           </p>
-          <img src="/src/assets/hover-link.png" alt="Hover Over Link" className="my-4 rounded-lg shadow-md max-w-full h-auto" />
+          <img src={hoverlink} alt="Hover Over Link" className="my-4 rounded-lg shadow-md max-w-full h-auto" />
         </section>
       </AnimateOnScroll>
 

@@ -1,3 +1,4 @@
+// src/App.tsx
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
@@ -10,8 +11,10 @@ import EmailAnalysis from './components/EmailAnalysis';
 import HistoryDisplay from './components/HistoryDisplay'; // Lịch sử email
 
 // CÁC COMPONENT MỚI CHO PHÂN TÍCH DOMAIN
-import DomainAnalysis from './components/DomainAnalysis'; // <-- IMPORT MỚI
-import AnalysisHistory from './components/AnalysisHistory'; // <-- IMPORT MỚI (Lịch sử Domain)
+import DomainAnalysis from './components/DomainAnalysis';
+import AnalysisHistory from './components/AnalysisHistory'; // Lịch sử Domain
+
+// IMPORT COMPONENT PHÂN LOẠI EMAIL MỚI
 
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -43,7 +46,11 @@ function App() {
 
               {/* Nhóm các Protected Routes (yêu cầu đăng nhập để truy cập) */}
               <Route element={<ProtectedRoute />}>
-                {/* Các trang tĩnh đã được bảo vệ (như trong cấu trúc bạn cung cấp) */}
+                
+              </Route>
+
+
+              {/* Các trang tĩnh đã được bảo vệ */}
                 <Route path="/about-scams" element={<AboutScamsPage />} />
                 <Route path="/how-to-identify" element={<HowToIdentifyPage />} />
                 <Route path="/protect-yourself" element={<ProtectYourselfPage />} />
@@ -52,12 +59,13 @@ function App() {
 
                 {/* Các trang tính năng email đã có từ trước */}
                 <Route path="/analyze" element={<EmailAnalysis />} />
-                <Route path="/history" element={<HistoryDisplay />} /> {/* Lịch sử email */}
+                <Route path="/history" element={<HistoryDisplay />} />
 
                 {/* CÁC ROUTE MỚI CHO PHÂN TÍCH DOMAIN */}
-                <Route path="/analyze-domain" element={<DomainAnalysis />} /> {/* <-- ROUTE MỚI */}
-                <Route path="/domain-history" element={<AnalysisHistory />} /> {/* <-- ROUTE MỚI CHO LỊCH SỬ DOMAIN */}
-              </Route>
+                <Route path="/analyze-domain" element={<DomainAnalysis />} />
+                <Route path="/domain-history" element={<AnalysisHistory />} />
+
+
 
               {/* Catch-all route for 404 Not Found */}
               <Route path="*" element={

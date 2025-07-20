@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class HuggingFaceInferenceRequest {
     private String inputs;
-    private HuggingFaceParameters parameters; // Thêm trường này
+    // Không cần trường 'parameters' cho model này nữa
 }

@@ -28,7 +28,7 @@ const AnalysisHistory: React.FC = () => {
 
       try {
         // SỬA ĐỔI QUAN TRỌNG: Cập nhật URL để userId là path variable
-        const response = await fetch(`http://localhost:8080/api/domain/history/${user.userId}`, {
+        const response = await fetch(`http://62.146.236.71:8080/api/domain/history/${user.userId}`, {
           headers: {
             // 'X-User-Id': user.userId.toString(), // <-- XÓA DÒNG NÀY
             // Nếu có JWT, bạn sẽ thêm Authorization header ở đây:

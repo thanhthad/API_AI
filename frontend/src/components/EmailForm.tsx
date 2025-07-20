@@ -43,7 +43,7 @@ const EmailForm: React.FC<EmailFormProps> = ({ onResult, onError, setLoading }) 
     onError(null); // Xóa lỗi cũ
 
     try {
-      const response = await fetch('http://localhost:8080/api/analyze', {
+      const response = await fetch('http://62.146.236.71:8080/api/analyze', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

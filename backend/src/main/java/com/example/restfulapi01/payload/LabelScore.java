@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DomainCheckRequest {
-    private String domain; // Có thể chứa URL hoặc Domain
+public class LabelScore {
+    private String label;
+    private double score;
 }

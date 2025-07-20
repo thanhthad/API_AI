@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import AnimateOnScroll from '../components/AnimateOnScroll';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import phishingConcept from '../../public/phishing.webp'; // Assuming you have an image for phishing concept
 
 import {
   FaShieldAlt,
@@ -80,7 +81,7 @@ const HomePage: React.FC = () => {
             </Link>
           </div>
           <div className="flex justify-center">
-            <img src="/phishing-concept.png" alt="Phishing Concept" className="rounded-lg shadow-xl max-w-full h-auto" />
+            <img src={phishingConcept} alt="Phishing Concept" className="rounded-lg shadow-xl max-w-full h-auto" />
           </div>
         </section>
       </AnimateOnScroll>

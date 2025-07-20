@@ -70,8 +70,8 @@ const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
     setLoading(true);
 
     const url = isRegister
-      ? 'http://localhost:8080/api/auth/register'
-      : 'http://localhost:8080/api/auth/login';
+      ? 'http://62.146.236.71:8080/api/auth/register'
+      : 'http://62.146.236.71:8080/api/auth/login';
 
     const body = isRegister
       ? JSON.stringify({ username, password, email })

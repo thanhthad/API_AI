@@ -22,7 +22,7 @@ const ForgotPasswordPage: React.FC = () => {
 
     try {
       // Gọi API backend để xử lý yêu cầu quên mật khẩu
-      const response = await fetch('http://localhost:8080/api/auth/forgot-password', {
+      const response = await fetch('http://62.146.236.71:8080/api/auth/forgot-password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

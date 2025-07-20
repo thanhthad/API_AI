@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/domain")
-@CrossOrigin(origins = "http://localhost:5173") // Chỉ định rõ nguồn gốc cho Frontend
+@CrossOrigin(origins = "*") // Cho phép ReactJS frontend của bạn truy cập
 public class DomainCheckController {
 
     private final DomainCheckService domainCheckService;
@@ -19,7 +19,7 @@ public class DomainCheckController {
 
     @PostMapping("/check")
     public ResponseEntity<DomainCheckResponse> checkDomain(@RequestBody DomainCheckRequest request) {
-        // Gọi service để kiểm tra domain, không cần userId trong dự án đơn giản này
+        // Gọi service để kiểm tra domain/text
         DomainCheckResponse response = domainCheckService.checkDomainSafety(request.getDomain());
         return ResponseEntity.ok(response);
     }
