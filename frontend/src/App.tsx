@@ -39,7 +39,7 @@ function App() {
               <Route path="/" element={<HomePage />} />
 
               {/* Trang đăng ký / đăng nhập (Public) */}
-              <Route path="/auth" element={<AuthForm onSuccess={() => window.location.href = '/analyze'} />} />
+              <Route path="/auth" element={<AuthForm />} />
 
               {/* TRANG QUÊN MẬT KHẨU (Public) */}
               <Route path="/forgot-password" element={<ForgotPasswordPage />} />
